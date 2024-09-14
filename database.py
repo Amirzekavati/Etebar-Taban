@@ -17,7 +17,8 @@ class AgentDataBase:
             print("update the commission")
         else:
             collection.insert_one(message_dict)
-            print("insert")
+            print("insert the first commission")
+            
     # for insert document into database
     # if document exist replace into database
     def upsert(self, message_dict):
