@@ -56,7 +56,7 @@ class CommissionAgent:
             data = response.json()
             print(fromDate.date())
 
-    def total_commission_customer(fromDate_str, toDate_str, page=1):
+    def total_commission_customer(self, fromDate_str, toDate_str, page=1):
         fromDate = datetime.strptime(fromDate_str, "%Y-%m-%d")
         toDate = datetime.strptime(toDate_str, "%Y-%m-%d")
         

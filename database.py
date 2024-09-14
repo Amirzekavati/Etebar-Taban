@@ -13,7 +13,11 @@ class AgentDataBase:
         collection = self.database[collection_name]
         existing_doc = self.collection.find_one({'AccountCode':message_dict['AccountCode']})
         if existing_doc:
-            collection.update_one({'TotalCommission': existing_doc['TotalCommission']}, existing_doc['TotalCommission'] + message_dict['TotalCommission'])
+            commission = {
+                "TotalCommission": existing_doc['TotalCommission'] + message_dict['TotalCommission'],
+                "AccountCode": existing_doc["AccountCode"]
+            }
+            collection.update_one(existing_doc, commission)
             print("update the commission")
         else:
             collection.insert_one(message_dict)
