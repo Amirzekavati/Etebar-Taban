@@ -8,7 +8,7 @@ class CommissionAgent:
     def __init__(self):
         # Create database
         self.db = AgentDataBase()
-
+        
         # Set the header
         self.username = "Tahlil.taban"
         self.password = "Et@@2025MR"
@@ -28,10 +28,10 @@ class CommissionAgent:
         commissions = []
         for record in data["Result"]:
             commission = {
-                "OnlineSellCommission": float(record["OnlineSellCommission"]),
-                "OnlineBuyCommission": float(record["OnlineBuyCommission"]),
-                "NonOnlineSellCommission": float(record["NonOnlineSellCommission"]),
-                "NonOnlineBuyCommission": float(record["NonOnlineBuyCommission"]),
+                # "OnlineSellCommission": float(record["OnlineSellCommission"]),
+                # "OnlineBuyCommission": float(record["OnlineBuyCommission"]),
+                # "NonOnlineSellCommission": float(record["NonOnlineSellCommission"]),
+                # "NonOnlineBuyCommission": float(record["NonOnlineBuyCommission"]),
                 "TotalCommission": float(record["OnlineSellCommission"]) +
                                    float(record["OnlineBuyCommission"]) +
                                    float(record["NonOnlineSellCommission"]) +
@@ -62,8 +62,7 @@ class CommissionAgent:
             fromDate += timedelta(days=1)
             # time.sleep(1)  # To handle potential rate limiting
 
-    def total_commission_customer(self, fromDate_str, toDate_str):
-        self.db.remove_collection("commission")
+    def total_commission_customers(self, fromDate_str, toDate_str):
         fromDate = datetime.strptime(fromDate_str, "%Y-%m-%d")
         toDate = datetime.strptime(toDate_str, "%Y-%m-%d")
 
@@ -83,8 +82,11 @@ class CommissionAgent:
             fromDate += timedelta(days=1)
             # time.sleep(1)  # To handle potential rate limiting
 
+    # def total_commission_customer_from_to(self, fromDate_str, toDate_str):
+        
+
 if __name__ == "__main__":
     agent = CommissionAgent()
     # Uncomment the line below to fetch records
     # agent.get_records("2024-06-30", "2024-09-09")
-    agent.total_commission_customer("2024-04-18", "2024-09-14")
+    agent.total_commission_customers("2024-04-18", "2024-09-14")
