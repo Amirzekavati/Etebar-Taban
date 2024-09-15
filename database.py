@@ -13,18 +13,24 @@ class AgentDataBase:
     def update(self, commissions, collection_name='commission'):
         for message_dict in commissions:
             existing_doc = self.database[collection_name].find_one({'AccountCode':message_dict['AccountCode']})
+
             if existing_doc:
-                if existing_doc['LastDateIdentifier']:
+                if existing_doc['Identifier']:
                     continue
                 
-                self.database[collection_name].update_one({"AccountCode":existing_doc['AccountCode']},{"$set":{"TotalCommission":existing_doc['TotalCommission'] + message_dict['TotalCommission']}} )
-                self.database[collection_name].update_one({"AccountCode":existing_doc['AccountCode']},{"$set":{"LastDateIdentifier": True}} )
-            
+                self.database[collection_name].update_one(
+                    {"AccountCode":existing_doc['AccountCode']},
+                    {"$set":{
+                        "TotalCommission":existing_doc['TotalCommission'] + message_dict['TotalCommission'],
+                        "Identifier": True}
+                    } 
+                )
+                
                 print("update the commission")
             else:
                 self.database[collection_name].insert_one(message_dict)
                 print("insert the first commission")
-                
+
     # for insert document into database
     # if document exist replace into database
     def upsert(self, message_dict):
