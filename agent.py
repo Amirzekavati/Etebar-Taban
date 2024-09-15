@@ -102,4 +102,4 @@ class CommissionAgent:
 if __name__ == "__main__":
     agent = CommissionAgent()
     # agent.get_records("2024-06-30", "2024-09-09")
-    agent.total_commission_customer("2024-09-09", "2024-09-14")
+    agent.total_commission_customer("2024-04-18", "2024-09-14")
