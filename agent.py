@@ -57,6 +57,7 @@ class CommissionAgent:
             print(fromDate.date())
 
     def total_commission_customer(self, fromDate_str, toDate_str, page=1):
+        self.db.remove_collection("commission")
         fromDate = datetime.strptime(fromDate_str, "%Y-%m-%d")
         toDate = datetime.strptime(toDate_str, "%Y-%m-%d")
         
@@ -97,11 +98,6 @@ class CommissionAgent:
             url = f"https://tbsapi.etbrokerage.ir/api/CustomerClub/GetCustomerTotalBrokerCommission?fromDate={str(fromDate.date())}&toDate={str(fromDate.date())}&page={page}&pageSize=100"
             response = requests.get(url, headers=headers)
             data = response.json()
-            print(fromDate.date())
-
-        
-        
-        
         
 if __name__ == "__main__":
     agent = CommissionAgent()
