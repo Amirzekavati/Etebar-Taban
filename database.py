@@ -1,6 +1,7 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from pymongo.errors import PyMongoError
 from datetime import datetime
+import time
 
 class AgentDataBase:
     def __init__(self, client='mongodb://localhost:27017/', db_name='EtebarTaban', collection_name='specificationsPerDay'):
@@ -8,42 +9,35 @@ class AgentDataBase:
         self.client = MongoClient(client)
         self.database = self.client[db_name]
         self.collection = self.database[collection_name]
-        
+
     def update(self, commissions, collection_name='commission'):
         for message_dict in commissions:
             existing_doc = self.database[collection_name].find_one({'AccountCode':message_dict['AccountCode']})
             if existing_doc:
-                if datetime.strptime(existing_doc['Date'], "%Y-%m-%dT%H:%M:%S").date() > datetime.strptime(message_dict['Date'], "%Y-%m-%dT%H:%M:%S").date():
+                if existing_doc['LastDateIdentifier']:
                     continue
                 
                 self.database[collection_name].update_one({"AccountCode":existing_doc['AccountCode']},{"$set":{"TotalCommission":existing_doc['TotalCommission'] + message_dict['TotalCommission']}} )
-                self.database[collection_name].update_one({"AccountCode":existing_doc['AccountCode']},{"$set":{"Date": message_dict['Date']}} )
-                
-                # commission = {
-                #     "TotalCommission": existing_doc['TotalCommission'] + message_dict['TotalCommission'],
-                #     "AccountCode": existing_doc['AccountCode'],
-                #     "Date": message_dict['Date']
-                # }
-                # self.database[collection_name].replace_one(existing_doc, commission)
+                self.database[collection_name].update_one({"AccountCode":existing_doc['AccountCode']},{"$set":{"LastDateIdentifier": True}} )
+            
                 print("update the commission")
             else:
                 self.database[collection_name].insert_one(message_dict)
                 print("insert the first commission")
-            
+                
     # for insert document into database
     # if document exist replace into database
     def upsert(self, message_dict):
-        existing_doc = self.collection.find_one({'AccountCode': message_dict['AccountCode'],
-                                                 'Date': message_dict['Date']})
+        existing_doc = self.collection.find_one({
+            'AccountCode': message_dict['AccountCode'],
+            'Date': message_dict['Date']
+            }
+        )
         # if we have disticnt data then replace
         if existing_doc:
             self.collection.replace_one({'AccountCode': existing_doc['AccountCode']}, message_dict)
-            # print(existing_doc['AccountCode'])
-            # time.sleep(2)
             print("replace the message")
         else:
-            # print(message_dict['AccountCode'])
-            # time.sleep(2)
             self.collection.insert_one(message_dict)
             print("insert the message")
 

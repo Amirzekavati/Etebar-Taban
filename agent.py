@@ -37,7 +37,7 @@ class CommissionAgent:
                                    float(record["NonOnlineSellCommission"]) +
                                    float(record["NonOnlineBuyCommission"]),
                 "AccountCode": record["AccountCode"],
-                "Date": record["Date"]
+                "LastDateIdentifier": False
             }
             commissions.append(commission)
         return commissions
