@@ -101,7 +101,6 @@ class CommissionAgent:
 
 if __name__ == "__main__":
     agent = CommissionAgent()
-    
     # Uncomment the line below to fetch records
     # agent.get_records("2024-06-30", "2024-09-09")
     # agent.total_commission_customers("2024-04-18", "2024-09-14")
