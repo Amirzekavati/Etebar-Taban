@@ -10,6 +10,10 @@ class AgentDataBase:
         self.database = self.client[db_name]
         self.collection = self.database[collection_name]
 
+    def find_person(self, accountCode, collection_name="totalCommission"):
+        total = self.database[collection_name].find_one({'AccountCode': accountCode})
+        print(f"Total commissions in this period of time is : {total['TotalCommission']}")
+
     def check_database(self, date, collection_name='commissions'):
         date_str = date.strftime('%Y-%m-%dT%H:%M:%S')
         if self.database[collection_name].find_one({'Date': date_str}):
@@ -29,7 +33,13 @@ class AgentDataBase:
                 )
                 print("update the commission")
             else:
-                self.database[collection_name].insert_one(document)
+                new_doc = {
+                    'TotalCommission': document['TotalCommission'],
+                    'AccountCode': document['AccountCode'],
+                    'Date': document['Date']
+                }
+
+                self.database[collection_name].insert_one(new_doc)
                 print("insert the new commission")
 
     # for insert document into database

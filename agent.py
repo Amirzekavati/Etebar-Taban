@@ -28,10 +28,10 @@ class CommissionAgent:
         
         for record in data["Result"]:
             commission = {
-                # "OnlineSellCommission": float(record["OnlineSellCommission"]),
-                # "OnlineBuyCommission": float(record["OnlineBuyCommission"]),
-                # "NonOnlineSellCommission": float(record["NonOnlineSellCommission"]),
-                # "NonOnlineBuyCommission": float(record["NonOnlineBuyCommission"]),
+                "OnlineSellCommission": float(record["OnlineSellCommission"]),
+                "OnlineBuyCommission": float(record["OnlineBuyCommission"]),
+                "NonOnlineSellCommission": float(record["NonOnlineSellCommission"]),
+                "NonOnlineBuyCommission": float(record["NonOnlineBuyCommission"]),
                 "TotalCommission": float(record["OnlineSellCommission"]) +
                                    float(record["OnlineBuyCommission"]) +
                                    float(record["NonOnlineSellCommission"]) +
@@ -94,10 +94,9 @@ class CommissionAgent:
                 self.db.analysis_update()
                 
         
+    def get_total_Commission_person(self, accountCode):
+        self.db.find_person(accountCode)
         
-            # time.sleep(1)  # To handle potential rate limiting
-        
-    # def total_commission_customer_from_to(self, fromDate_str, toDate_str):
         
 
 if __name__ == "__main__":
@@ -105,4 +104,5 @@ if __name__ == "__main__":
     
     # Uncomment the line below to fetch records
     # agent.get_records("2024-06-30", "2024-09-09")
-    agent.total_commission_customers("2024-04-18", "2024-09-14")
+    # agent.total_commission_customers("2024-04-18", "2024-09-14")
+    agent.get_total_Commission_person("31212-2002750")
