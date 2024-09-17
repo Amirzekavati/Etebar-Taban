@@ -10,46 +10,47 @@ class AgentDataBase:
         self.database = self.client[db_name]
         self.collection = self.database[collection_name]
 
-    def update(self, commissions, collection_name='commission'):
-        for message_dict in commissions:
-            existing_doc = self.database[collection_name].find_one({'AccountCode':message_dict['AccountCode']})
+    def check_database(self, date, collection_name='commissions'):
+        date_str = date.strftime('%Y-%m-%dT%H:%M:%S')
+        if self.database[collection_name].find_one({'Date': date_str}):
+            return True
+        return False
 
+    def analysis_update(self, collection_name='totalCommission'):
+        documents = self.database['commissions'].find()
+        for document in documents:
+            existing_doc = self.database[collection_name].find_one({
+                'AccountCode': document['AccountCode']
+            })   
             if existing_doc:
-                if existing_doc['Identifier']:
-                    continue
-                
                 self.database[collection_name].update_one(
-                    {"AccountCode":existing_doc['AccountCode']},
-                    {"$set":{
-                        "TotalCommission":existing_doc['TotalCommission'] + message_dict['TotalCommission'],
-                        "Identifier": True}
-                    } 
+                    {'AccountCode': existing_doc['AccountCode']},
+                    {"$set":{'TotalCommission': existing_doc['TotalCommission'] + document['TotalCommission']}}
                 )
-                
                 print("update the commission")
             else:
-                self.database[collection_name].insert_one(message_dict)
-                print("insert the first commission")
+                self.database[collection_name].insert_one(document)
+                print("insert the new commission")
 
     # for insert document into database
     # if document exist replace into database
-    def upsert(self, message_dict):
-        existing_doc = self.collection.find_one({
+    def upsert(self, message_dict ,collection_name):
+        existing_doc = self.database[collection_name].find_one({
             'AccountCode': message_dict['AccountCode'],
             'Date': message_dict['Date']
             }
         )
         # if we have disticnt data then replace
         if existing_doc:
-            self.collection.replace_one({'AccountCode': existing_doc['AccountCode']}, message_dict)
+            self.database[collection_name].replace_one({'AccountCode': existing_doc['AccountCode']}, message_dict)
             print("replace the message")
         else:
-            self.collection.insert_one(message_dict)
+            self.database[collection_name].insert_one(message_dict)
             print("insert the message")
 
     # delete document
-    def delete(self, message_dict):
-        self.collection.delete_one(message_dict)
+    def delete(self, message_dict, collection_name):
+        self.database[collection_name].delete_one(message_dict)
         print("The message was deleted successfully")
 
     #delete collection
@@ -64,8 +65,8 @@ class AgentDataBase:
         print("The database was closed")
 
     # remove all of documents
-    def clear_database(self):
-        self.collection.delete_many({})
+    def clear_database(self, collection_name):
+        self.database[collection_name].delete_many({})
         print("clear the database")
 
     def check_connection(self):
