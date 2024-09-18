@@ -4,23 +4,25 @@ from datetime import datetime
 import time
 
 class AgentDataBase:
-    def __init__(self, client='mongodb://localhost:27017/', db_name='EtebarTaban', collection_name='specificationsPerDay'):
+    def __init__(self, client='mongodb://localhost:27017/', db_name='EtebarTaban', collection_name='all Transactions'):
         # initialize database
         self.client = MongoClient(client)
         self.database = self.client[db_name]
         self.collection = self.database[collection_name]
 
-    def find_person(self, accountCode, collection_name="totalCommission"):
+    def find_person(self, accountCode, collection_name="total commissions person"):
         total = self.database[collection_name].find_one({'AccountCode': accountCode})
-        print(f"Total commissions in this period of time is : {total['TotalCommission']}")
-
+        if total:
+            print(f"Total commissions in this period of time is: {total['TotalCommission']}")
+        else:
+            print(f"No commissions found for account: {accountCode}")
+            
     def check_database(self, date, collection_name='commissions'):
         date_str = date.strftime('%Y-%m-%dT%H:%M:%S')
-        if self.database[collection_name].find_one({'Date': date_str}):
-            return True
-        return False
+        return self.database[collection_name].find_one({'Date': date_str}) is not None
 
-    def analysis_update(self, collection_name='totalCommission'):
+
+    def analysis_update(self, collection_name='total commissions person'):
         documents = self.database['commissions'].find()
         for document in documents:
             existing_doc = self.database[collection_name].find_one({
@@ -60,12 +62,16 @@ class AgentDataBase:
 
     # delete document
     def delete(self, message_dict, collection_name):
-        self.database[collection_name].delete_one(message_dict)
-        print("The message was deleted successfully")
+        result = self.database[collection_name].delete_one(message_dict)
+        if result.deleted_count > 0:
+            print("The message was deleted successfully")
+        else:
+            print("No matching document found to delete")
 
     #delete collection
     def remove_collection(self, collection_name):
         self.database[collection_name].drop()
+        print(f"Collection '{collection_name}' dropped successfully")
 
     # close database
     def close(self):
@@ -76,8 +82,8 @@ class AgentDataBase:
 
     # remove all of documents
     def clear_database(self, collection_name):
-        self.database[collection_name].delete_many({})
-        print("clear the database")
+        result = self.database[collection_name].delete_many({})
+        print(f"Cleared the database. {result.deleted_count} documents deleted.")
 
     def check_connection(self):
         try:
