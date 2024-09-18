@@ -4,13 +4,13 @@ from datetime import datetime
 import time
 
 class AgentDataBase:
-    def __init__(self, client='mongodb://localhost:27017/', db_name='EtebarTaban', collection_name='specificationsPerDay'):
+    def __init__(self, client='mongodb://localhost:27017/', db_name='EtebarTaban', collection_name='all Transactions'):
         # initialize database
         self.client = MongoClient(client)
         self.database = self.client[db_name]
         self.collection = self.database[collection_name]
 
-    def find_person(self, accountCode, collection_name="totalCommission"):
+    def find_person(self, accountCode, collection_name="total commissions person"):
         total = self.database[collection_name].find_one({'AccountCode': accountCode})
         print(f"Total commissions in this period of time is : {total['TotalCommission']}")
 
@@ -20,7 +20,7 @@ class AgentDataBase:
             return True
         return False
 
-    def analysis_update(self, collection_name='totalCommission'):
+    def analysis_update(self, collection_name='total commissions person'):
         documents = self.database['commissions'].find()
         for document in documents:
             existing_doc = self.database[collection_name].find_one({
