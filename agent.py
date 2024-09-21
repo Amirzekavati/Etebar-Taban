@@ -20,13 +20,9 @@ class CommissionAgent:
 
     def fetch_data(self, from_date, to_date, page=1):
         url = f"{self.base_url}?fromDate={from_date}&toDate={to_date}&page={page}&pageSize=1000"
-        try:
-            response = requests.get(url, headers=self.headers)
-            response.raise_for_status()  # Check for HTTP errors
-            return response.json()
-        except requests.RequestException as e:
-            print(f"Error fetching data: {e}")
-            return None
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()  # Check for HTTP errors
+        return response.json()
         
     def calculate_total_commission(self, record):
         return (
@@ -74,7 +70,7 @@ class CommissionAgent:
         last_date = last_date_obj['Date']
         bulk_operations = []
         # not self.db.check_database(current_date, "all Transactions")
-        while not self.db.check_database(last_date, "all Transactions"):
+        while last_date != datetime.now() + timedelta(days=1):
             page = 1
             has_more_data = True
             bulk_operations = []

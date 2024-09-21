@@ -16,11 +16,6 @@ class AgentDataBase:
             print(f"Total commissions in this period of time is: {total['TotalCommission']}")
         else:
             print(f"No commissions found for account: {accountCode}")
-            
-    def check_database(self, date, collection_name='all Transactions'):
-        date_str = date.strftime('%Y-%m-%dT%H:%M:%S')
-        return self.database[collection_name].find_one({'Date': date_str}) is not None
-
 
     def analysis_update(self, fromDate, toDate, collection_name='total commissions person'):
         documents = self.database["all Transactions"].find({"Date":{"$gte":fromDate,"$lte":toDate}})
